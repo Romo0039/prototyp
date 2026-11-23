@@ -1,0 +1,874 @@
+[
+    Toto je zatiaľ prvý prototyp testovacej sady, ktorá bude použitá pre BP.,
+    Zatiaľ som to nechal ako splniteľný príkaz, ale ešte to musím domyslieť (není špecifikované ktoré okno aj keď je len jedno kúrenie v obývačke)
+    V tomto okamžiku uvažujem že LLM si vie odvodiť že keď je AC v obývačke, tak tam aj zostávame a nechceme okno v kuchyni
+    Ďalší možný pohľad by bol, že ak je hocijaké okno otvorené tak by sa mala vyprnúť AC
+    Testy s upresnenim a chybou musim prepobit, pretoze som menil strukturu
+    {
+    "id": "0 (príklad zo zadania)",
+    "name": "Vypnutie kúrenia ak je otvorené okno",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď otvorím okno, vypni kúrenie.",
+    "answer": {
+      "alias": "Vypnutie kúrenia pri otvorení okna",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "binary_sensor.living_room_window",
+          "from": "off",
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "off"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "1",
+    "name": "Vypnutie kávovaru pri otvorení okna v kuchyni",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď sa otvorí okno v kuchyni, vypni kávovar.",
+    "answer": {
+      "alias": "Vypnutie kávovaru pri otvorení okna v kuchyni",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "binary_sensor.kitchen_window",
+          "from": "off",
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "switch.turn_off",
+          "target": {
+            "entity_id": "switch.kitchen_coffee_maker"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "2",
+    "name": "Zapnutie ventilátora pri vysokej vlhkosti v kúpeľni",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Ak vlhkosť v kúpeľni stúpne nad 70 percent, zapni tam ventilátor.",
+    "answer": {
+      "alias": "Zapnutie ventilátora pri vlhkosti v kúpeľni",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.bathroom_humidity",
+          "above": 70
+        }
+      ],
+      "actions": [
+        {
+          "action": "fan.turn_on",
+          "target": {
+            "entity_id": "fan.bathroom_fan"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "3",
+    "name": "Zníženie vlhkosti v kúpeľni vypne ventilátor",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď vlhkosť v kúpeľni klesne pod 50 percent, vypni ventilátor.",
+    "answer": {
+      "alias": "Vypnutie ventilátora pri nízkej vlhkosti",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.bathroom_humidity",
+          "below": 50
+        }
+      ],
+      "actions": [
+        {
+          "action": "fan.turn_off",
+          "target": {
+            "entity_id": "fan.bathroom_fan"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "4",
+    "name": "Zapnutie veľkého svetla po zapnutí televízora",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď zapnem televízor, rozsvieť veľké svetlo v obývačke.",
+    "answer": {
+      "alias": "Svetlo pri zapnutí TV",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "switch.living_room_tv",
+          "from": "off",
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_on",
+          "target": {
+            "entity_id": "light.living_room_main"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "5",
+    "name": "Otvorenie rolety v spálni ráno o 7:30",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Každý deň o pol ôsmej ráno vytiahni roletu v spálni.",
+    "answer": {
+      "alias": "Ranné otvorenie rolety v spálni",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "07:30:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "cover.open_cover",
+          "target": {
+            "entity_id": "cover.bedroom_blind"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "6",
+    "name": "Zatvorenie rolety v spálni večer o 21:00",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "O deviatej večer zatiahni roletu v spálni.",
+    "answer": {
+      "alias": "Večerné zatvorenie rolety v spálni",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "21:00:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "cover.close_cover",
+          "target": {
+            "entity_id": "cover.bedroom_blind"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "7",
+    "name": "Zapnutie klimatizácie pri vysokej teplote v obývačke",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď teplota v obývačke prekročí 26 stupňov, zapni klimatizáciu na chladenie.",
+    "answer": {
+      "alias": "Chladenie obývačky pri teple",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.obyvacka_senzor_teploty_v_obyvacke_temperature",
+          "above": 26
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "cool"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "8",
+    "name": "Zapnutie kúrenia pri poklese teploty",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Ak teplota v obývačke klesne pod 19 stupňov, zapni kúrenie.",
+    "answer": {
+      "alias": "Kúrenie v obývačke pri chlade",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.obyvacka_senzor_teploty_v_obyvacke_temperature",
+          "below": 19
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "heat"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "9",
+    "name": "Vypnutie malého svetla pri zapnutí veľkého",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "Keď sa zapne veľké svetlo v obývačke, zhasni to malé.",
+    "answer": {
+      "alias": "Prepnutie svetiel v obývačke",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "light.living_room_main",
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_off",
+          "target": {
+            "entity_id": "light.living_room_small"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "10",
+    "name": "Nastavenie jasu kuchynského svetla",
+    "category": "simple_trigger_action",
+    "difficulty": "easy",
+    "question": "O 18:00 zapni svetlo v kuchyni na polovičný jas.",
+    "answer": {
+      "alias": "Večerné tlmené svetlo v kuchyni",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "18:00:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_on",
+          "target": {
+            "entity_id": "light.kitchen_main"
+          },
+          "data": {
+            "brightness_pct": 50
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "11",
+    "name": "Bezpečnostné vypnutie kávovaru",
+    "category": "duration_trigger",
+    "difficulty": "medium",
+    "question": "Ak zostane kávovar zapnutý dlhšie ako 15 minút, automaticky ho vypni.",
+    "answer": {
+      "alias": "Bezpečnostné vypnutie kávovaru",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "switch.kitchen_coffee_maker",
+          "to": "on",
+          "for": {
+            "minutes": 15
+          }
+        }
+      ],
+      "actions": [
+        {
+          "action": "switch.turn_off",
+          "target": {
+            "entity_id": "switch.kitchen_coffee_maker"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "12",
+    "name": "Časovač pre svetlo v kúpeľni",
+    "category": "duration_trigger",
+    "difficulty": "medium",
+    "question": "Zhasni svetlo v kúpeľni, ak svieti už 10 minút.",
+    "answer": {
+      "alias": "Časovač pre svetlo v kúpeľni",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "light.bathroom_main",
+          "to": "on",
+          "for": {
+            "minutes": 10
+          }
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_off",
+          "target": {
+            "entity_id": "light.bathroom_main"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "13",
+    "name": "Vypnutie klímy pri dlhšie otvorenom okne",
+    "category": "duration_trigger",
+    "difficulty": "medium",
+    "question": "Keď nechám okno v obývačke otvorené aspoň pol minúty, vypni klimatizáciu.",
+    "answer": {
+      "alias": "Vypnutie klímy pri dlhšie otvorenom okne",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "binary_sensor.living_room_window",
+          "to": "on",
+          "for": {
+            "seconds": 30
+          }
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "off"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "14",
+    "name": "Obnovenie klímy po zatvorení okna",
+    "category": "duration_trigger",
+    "difficulty": "medium",
+    "question": "Po zatvorení okna v obývačke na viac ako 1 minútu nastav klimatizáciu späť na automatický režim.",
+    "answer": {
+      "alias": "Obnovenie klímy po zatvorení okna",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "binary_sensor.living_room_window",
+          "to": "off",
+          "for": {
+            "minutes": 1
+          }
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "auto"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "15",
+    "name": "Automatické vypnutie ventilátora po 20 minútach",
+    "category": "duration_trigger",
+    "difficulty": "medium",
+    "question": "Vypni ventilátor v kúpeľni, ak beží nepretržite 20 minút.",
+    "answer": {
+      "alias": "Automatické vypnutie ventilátora po 20 minútach",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "fan.bathroom_fan",
+          "to": "on",
+          "for": {
+            "minutes": 20
+          }
+        }
+      ],
+      "actions": [
+        {
+          "action": "fan.turn_off",
+          "target": {
+            "entity_id": "fan.bathroom_fan"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "16",
+    "name": "Chladenie len pri zatvorenom okne",
+    "category": "conditional_automation",
+    "difficulty": "medium",
+    "question": "Keď teplota v obývačke presiahne 25 stupňov, zapni chladenie, ale iba vtedy, ak je okno v obývačke zatvorené.",
+    "answer": {
+      "alias": "Chladenie len pri zatvorenom okne",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.obyvacka_senzor_teploty_v_obyvacke_temperature",
+          "above": 25
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "state",
+          "entity_id": "binary_sensor.living_room_window",
+          "state": "off"
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "cool"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "17",
+    "name": "Nočné vypnutie TV",
+    "category": "conditional_automation",
+    "difficulty": "medium",
+    "question": "O polnoci vypni televízor, pokiaľ je zapnutý.",
+    "answer": {
+      "alias": "Nočné vypnutie TV",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "00:00:00"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "state",
+          "entity_id": "switch.living_room_tv",
+          "state": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "switch.turn_off",
+          "target": {
+            "entity_id": "switch.living_room_tv"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "18",
+    "name": "Večerné podsvietenie pri TV",
+    "category": "conditional_automation",
+    "difficulty": "medium",
+    "question": "Keď zapnem televízor po 19:00, zapni aj malé svetlo v obývačke.",
+    "answer": {
+      "alias": "Večerné podsvietenie pri TV",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "switch.living_room_tv",
+          "to": "on"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "time",
+          "after": "19:00:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_on",
+          "target": {
+            "entity_id": "light.living_room_small"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "19",
+    "name": "Intenzívne odvetranie kúpeľne",
+    "category": "conditional_automation",
+    "difficulty": "medium",
+    "question": "Ak vlhkosť v kúpeľni stúpne nad 85 % a svieti tam svetlo, nastav ventilátor na 100 percent.",
+    "answer": {
+      "alias": "Intenzívne odvetranie kúpeľne",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.bathroom_humidity",
+          "above": 85
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "state",
+          "entity_id": "light.bathroom_main",
+          "state": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "fan.set_percentage",
+          "target": {
+            "entity_id": "fan.bathroom_fan"
+          },
+          "data": {
+            "percentage": 100
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "20",
+    "name": "Odvlhčovanie pri varení v kuchyni",
+    "category": "conditional_automation",
+    "difficulty": "hard",
+    "question": "Keď vlhkosť v kuchyni prekročí 75 %, nastav klimatizáciu v obývačke na režim odvlhčovania (dry), pokiaľ už nie je vypnutá.",
+    "answer": {
+      "alias": "Odvlhčovanie pri varení v kuchyni",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.kitchen_humidity",
+          "above": 75
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "not",
+          "conditions": [
+            {
+              "condition": "state",
+              "entity_id": "climate.living_room_ac",
+              "state": "off"
+            }
+          ]
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "dry"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "21",
+    "name": "Filmová atmosféra pri TV",
+    "category": "multi_action",
+    "difficulty": "hard",
+    "question": "Keď zapnem televízor, zhasni veľké svetlo v obývačke a zapni malé svetlo.",
+    "answer": {
+      "alias": "Filmová atmosféra pri TV",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": "switch.living_room_tv",
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_off",
+          "target": {
+            "entity_id": "light.living_room_main"
+          }
+        },
+        {
+          "action": "light.turn_on",
+          "target": {
+            "entity_id": "light.living_room_small"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "22",
+    "name": "Ranná rutina",
+    "category": "multi_action",
+    "difficulty": "hard",
+    "question": "O siedmej ráno otvor roletu v spálni, zapni kávovar a rozsvieť svetlo v kuchyni na 80 %.",
+    "answer": {
+      "alias": "Ranná rutina",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "07:00:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "cover.open_cover",
+          "target": {
+            "entity_id": "cover.bedroom_blind"
+          }
+        },
+        {
+          "action": "switch.turn_on",
+          "target": {
+            "entity_id": "switch.kitchen_coffee_maker"
+          }
+        },
+        {
+          "action": "light.turn_on",
+          "target": {
+            "entity_id": "light.kitchen_main"
+          },
+          "data": {
+            "brightness_pct": 80
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "23",
+    "name": "Nočné vypnutie spotrebičov a svetiel",
+    "category": "multi_action",
+    "difficulty": "hard",
+    "question": "O pol dvanástej v noci vypni všetky svetlá v obývačke, svetlo v kuchyni, televízor aj kávovar.",
+    "answer": {
+      "alias": "Nočné vypnutie spotrebičov a svetiel",
+      "triggers": [
+        {
+          "trigger": "time",
+          "at": "23:30:00"
+        }
+      ],
+      "actions": [
+        {
+          "action": "light.turn_off",
+          "target": {
+            "entity_id": [
+              "light.living_room_main",
+              "light.living_room_small",
+              "light.kitchen_main"
+            ]
+          }
+        },
+        {
+          "action": "switch.turn_off",
+          "target": {
+            "entity_id": [
+              "switch.living_room_tv",
+              "switch.kitchen_coffee_maker"
+            ]
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "24",
+    "name": "Vypnutie klímy pri otvorení ľubovoľného okna",
+    "category": "multi_trigger",
+    "difficulty": "hard",
+    "question": "Keď sa otvorí okno v obývačke alebo okno v kuchyni, vypni klimatizáciu.",
+    "answer": {
+      "alias": "Vypnutie klímy pri otvorení ľubovoľného okna",
+      "triggers": [
+        {
+          "trigger": "state",
+          "entity_id": [
+            "binary_sensor.living_room_window",
+            "binary_sensor.kitchen_window"
+          ],
+          "to": "on"
+        }
+      ],
+      "actions": [
+        {
+          "action": "climate.set_hvac_mode",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "hvac_mode": "off"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "25",
+    "name": "Ochrana pred prehriatím bytu",
+    "category": "multi_action",
+    "difficulty": "hard",
+    "question": "Ak teplota v obývačke stúpne nad 28 stupňov, nastav pozíciu rolety v spálni na 50 % a zapni klímu na 22 stupňov.",
+    "answer": {
+      "alias": "Ochrana pred prehriatím bytu",
+      "triggers": [
+        {
+          "trigger": "numeric_state",
+          "entity_id": "sensor.obyvacka_senzor_teploty_v_obyvacke_temperature",
+          "above": 28
+        }
+      ],
+      "actions": [
+        {
+          "action": "cover.set_cover_position",
+          "target": {
+            "entity_id": "cover.bedroom_blind"
+          },
+          "data": {
+            "position": 50
+          }
+        },
+        {
+          "action": "climate.set_temperature",
+          "target": {
+            "entity_id": "climate.living_room_ac"
+          },
+          "data": {
+            "temperature": 22,
+            "hvac_mode": "cool"
+          }
+        }
+      ],
+      "mode": "single"
+    }
+  },
+  {
+    "id": "26",
+    "name": "Nejednoznačné svetlo v obývačke",
+    "category": "edge_case_ambiguity",
+    "difficulty": "edge_case",
+    "question": "Zapni svetlo v obývačke.",
+    "answer": {
+      "status": "needs_clarification",
+      "needs_clarification": true,
+      "clarification_message": "V obývačke máte veľké aj malé svetlo (light.living_room_main, light.living_room_small). Ktoré z nich chcete zapnúť?"
+    }
+  },
+  {
+    "id": "27",
+    "name": "Nejednoznačné svetlo bez určenia miestnosti",
+    "category": "edge_case_ambiguity",
+    "difficulty": "edge_case",
+    "question": "Zhasni svetlo.",
+    "answer": {
+      "status": "needs_clarification",
+      "needs_clarification": true,
+      "clarification_message": "V systéme je viacero svetiel (kuchyňa, obývačka, kúpeľňa). Upresnite prosím, ktoré svetlo chcete zhasnúť."
+    }
+  },
+  {
+    "id": "28",
+    "name": "Nejednoznačné okno",
+    "category": "edge_case_ambiguity",
+    "difficulty": "edge_case",
+    "question": "Keď sa otvorí okno, vypni kávovar.",
+    "answer": {
+      "status": "needs_clarification",
+      "needs_clarification": true,
+      "clarification_message": "V domácnosti sú evidované dve okná (okno v kuchyni a okno v obývačke). Ktoré okno má spustiť túto automatizáciu?"
+    }
+  },
+  {
+    "id": "29",
+    "name": "Požiadavka na neexistujúce zariadenie",
+    "category": "edge_case_missing_entity",
+    "difficulty": "edge_case",
+    "question": "Keď otvorím vchodové dvere, zapni svetlo na chodbe.",
+    "answer": {
+      "status": "error",
+      "needs_clarification": false,
+      "error_message": "Zariadenia pre vchodové dvere ani svetlo na chodbe neboli v zozname entít Home Assistant nájdené."
+    }
+  },
+  {
+    "id": "30",
+    "name": "Nepodporovaná funkcia existujúceho zariadenia",
+    "category": "edge_case_unsupported_feature",
+    "difficulty": "edge_case",
+    "question": "Zmeň farbu svetla v kuchyni na červenú.",
+    "answer": {
+      "status": "error",
+      "needs_clarification": false,
+      "error_message": "Entita light.kitchen_main podporuje iba nastavenie jasu (brightness), nie zmenu RGB farieb."
+    }
+  }
+]

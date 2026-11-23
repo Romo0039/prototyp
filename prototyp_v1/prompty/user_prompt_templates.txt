@@ -1,0 +1,8 @@
+[Aktuálny stav prostredia - Dostupné entity a stavy]
+{entities_block}
+
+[Požiadavka používateľa]
+"{user_request}"
+
+[Pokyn]
+Vygeneruj výstup v štruktúre {target_structure}.
